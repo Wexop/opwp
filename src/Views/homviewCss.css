@@ -1,0 +1,13 @@
+#findPlayerInput {
+    border-radius: 10px;
+    margin-top: 3vh;
+    width: 30vw;
+    transition: all 1s ease-in-out;
+
+}
+
+#findPlayerInput:hover {
+    width: 50vw;
+
+    transition: all 1s ease-in-out;
+}

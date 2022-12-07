@@ -19,3 +19,14 @@ export const SimpleButton = (props: { text: String, onpress: any }) => {
         </a>
     )
 }
+
+export const simpleButtonStyle = {
+  backgroundColor: color.lightPurple,
+  width: "15vw",
+  alignSelf: "center",
+  borderRadius: 10,
+  textAlign: "center",
+  padding: 7,
+  fontSize: "2vw",
+  color: color.white,
+}

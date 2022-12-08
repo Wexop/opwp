@@ -14,6 +14,8 @@ export const AnalysesView = () => {
 
     const name = location.state.player
 
+    let test = ""
+
     let playerInfos = {
         playerLevel: 0,
         playerName: "",
@@ -41,10 +43,14 @@ export const AnalysesView = () => {
     axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?${riotAPIKey}`)
         .then(res => {
             setSummoner(res.data)
+
+            test = res.data
         })
 
 
     console.log(summoner)
+
+    console.log(test)
 
 
     if (summoner) {
@@ -62,11 +68,15 @@ export const AnalysesView = () => {
             .then(res => {
                 setRankedState(res.data)
             })
+
+        console.log(rankedStat)
     }
     let tierRank = playerInfos.tier
 
-    if (rankedStat) {
-        playerInfos.leagueId = rankedStat[0]["leagueId"]
+    const haveRankedStat = rankedStat && rankedStat.length > 0
+
+    if (haveRankedStat) {
+/*        playerInfos.leagueId = rankedStat[0]["leagueId"]*/
         playerInfos.rank = rankedStat[0]["rank"]
         playerInfos.wins = rankedStat[0]["wins"]
         playerInfos.losses = rankedStat[0]["losses"]
@@ -74,7 +84,7 @@ export const AnalysesView = () => {
         playerInfos.summonerId = rankedStat[0]["summonerId"]
         playerInfos.hotStreak = rankedStat[0]["hotStreak"]
 
-        console.log(rankedStat)
+
 
         tierRank = playerInfos.tier.toLowerCase()
 
@@ -89,11 +99,12 @@ export const AnalysesView = () => {
 
                 <div style={{
                     ...CardStyle,
-
+                    width: "70vw",
                     display: "flex",
-                    flexDirection: "row"
+                    flexDirection: "row",
+                    justifyContent: "space-evenly"
                 }}>
-                    <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
+                    <div style={{display: "flex", alignItems: "center", flexDirection: "column",}}>
                         <img
                             src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/profileicon/${playerInfos.profileIconId}.png`}
                             alt="PlayerIcon"
@@ -103,16 +114,23 @@ export const AnalysesView = () => {
                         <BasicText>{playerInfos.playerLevel}</BasicText>
                     </div>
 
-                    <div style={{display: "flex", alignItems: "center", flexDirection: "column", alignContent: "flex-start"}}>
-                        <img
-                            src={`../emblems/Emblem_${tierRank}.png`}
-                            alt="PlayerTier"
-                            style={{width: "10vw", height: "auto"}}
-                        />
-                        <BasicText>{playerInfos.tier + " " + playerInfos.rank }</BasicText>
-                        <BasicText style={{color: color.green}} >{playerInfos.wins + " wins"}</BasicText>
-                        <BasicText style={{color: color.red}} >{playerInfos.losses + " losses"}</BasicText>
-                    </div>
+                    {haveRankedStat ? (
+                        <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
+                            <img
+                                src={`https://raw.githubusercontent.com/Wexop/opwp/master/src/emblems/Emblem_${tierRank}.png`}
+                                alt="PlayerTier"
+                                style={{width: "10vw", height: "auto"}}
+                            />
+                            <BasicText>{playerInfos.tier + " " + playerInfos.rank }</BasicText>
+                            <BasicText style={{color: color.green}} >{playerInfos.wins + " wins"}</BasicText>
+                            <BasicText style={{color: color.red}} >{playerInfos.losses + " losses"}</BasicText>
+                        </div>
+                    ): (
+                        <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
+                            <BasicText>UNRANKED</BasicText>
+                        </div>
+                    )}
+
 
 
                 </div>

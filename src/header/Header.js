@@ -7,10 +7,11 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import {color} from "../utile/color";
 
 function NavScrollExample() {
+
     return (
         <Navbar style={{backgroundColor: color.purple}} expand="lg">
             <Container fluid>
-                <Navbar.Brand href="#">op.wp</Navbar.Brand>
+                <Navbar.Brand>op.wp</Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbarScroll" />
                 <Navbar.Collapse id="navbarScroll">
                     <Nav
@@ -18,7 +19,7 @@ function NavScrollExample() {
                         style={{ maxHeight: '100px' }}
                         navbarScroll
                     >
-                        <Nav.Link href="#action1">Home</Nav.Link>
+                        <Nav.Link>Home</Nav.Link>
                         <Nav.Link href="#action2">Link</Nav.Link>
                         <NavDropdown title="Link" id="navbarScrollingDropdown">
                             <NavDropdown.Item href="#action3">Action</NavDropdown.Item>

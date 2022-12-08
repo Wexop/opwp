@@ -1,40 +1,50 @@
-import NavScrollExample from "../header/Header"
-import { useLocation } from "react-router-dom"
+import {useLocation} from "react-router-dom"
 import axios from "axios"
-import { useState } from "react"
+import {useState} from "react"
+import {riotAPIKey} from "../utile/riotAPIKey";
 
 
 export const AnalysesView = () => {
 
-  const location = useLocation()
+    const location = useLocation()
 
-  const name = location.state.player
+    const name = location.state.player
 
-  let playerInfos = {
-    playerLevel: 0
-  }
+    let playerInfos = {
+        playerLevel: 0,
+        playerName: "",
+        accountId: "",
+        id: "",
+        profileIconId: "",
+        puuid: "",
+        revisionDate: "",
+    }
 
-  const [summoner, setSummoner] = useState()
+    const [summoner, setSummoner] = useState()
 
-  axios.get( `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${ name }?api_key=RGAPI-58bb6b89-66ef-40d5-a51d-51c687318726` )
-    .then( res => {
-      setSummoner( res.data )
-    } )
+    axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?${riotAPIKey}`)
+        .then(res => {
+            setSummoner(res.data)
+        })
 
-  console.log( summoner )
+    console.log(summoner)
 
-  if(summoner) {
-    const summonerLevel = summoner["summonerLevel"]
-    playerInfos.playerLevel = summonerLevel
-  }
+    if (summoner) {
+        playerInfos.playerLevel = summoner["summonerLevel"]
+        playerInfos.playerName = summoner["name"]
+        playerInfos.accountId = summoner["accountId"]
+        playerInfos.id = summoner["id"]
+        playerInfos.puuid = summoner["puuid"]
+        playerInfos.profileIconId = summoner["profileIconId"]
+        playerInfos.revisionDate = summoner["revisionDate"]
+    }
 
 
-
-  return (
-    <>
-      <h1>wsh</h1>
-      <h2>{ location.state.player }</h2>
-      <h2>{ playerInfos.playerLevel }</h2>
-    </>
-  )
+    return (
+        <>
+            <h1>wsh</h1>
+            <h2>{playerInfos.playerName}</h2>
+            <h2>{playerInfos.playerLevel}</h2>
+        </>
+    )
 }

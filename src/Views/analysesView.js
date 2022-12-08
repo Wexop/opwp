@@ -6,15 +6,11 @@ import {CardStyle} from "../components/card";
 import {BasicText} from "../components/basicComponents";
 import {color} from "../utile/color";
 
-
-
 export const AnalysesView = () => {
 
     const location = useLocation()
 
     const name = location.state.player
-
-    let test = ""
 
     let playerInfos = {
         playerLevel: 0,
@@ -37,21 +33,17 @@ export const AnalysesView = () => {
         hotStreak: false
     }
 
-    const [summoner, setSummoner] = useState()
-    const [rankedStat, setRankedState] = useState()
+    const [summoner, setSummoner] = useState("")
+    const [rankedStat, setRankedState] = useState("")
+
+    let tierRank = playerInfos.tier
 
     axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?${riotAPIKey}`)
         .then(res => {
             setSummoner(res.data)
-
-            test = res.data
         })
 
-
     console.log(summoner)
-
-    console.log(test)
-
 
     if (summoner) {
 
@@ -71,12 +63,11 @@ export const AnalysesView = () => {
 
         console.log(rankedStat)
     }
-    let tierRank = playerInfos.tier
 
     const haveRankedStat = rankedStat && rankedStat.length > 0
 
     if (haveRankedStat) {
-/*        playerInfos.leagueId = rankedStat[0]["leagueId"]*/
+        /*        playerInfos.leagueId = rankedStat[0]["leagueId"]*/
         playerInfos.rank = rankedStat[0]["rank"]
         playerInfos.wins = rankedStat[0]["wins"]
         playerInfos.losses = rankedStat[0]["losses"]
@@ -85,13 +76,9 @@ export const AnalysesView = () => {
         playerInfos.hotStreak = rankedStat[0]["hotStreak"]
 
 
-
         tierRank = playerInfos.tier.toLowerCase()
 
     }
-
-
-
 
     return (
         <>
@@ -111,7 +98,7 @@ export const AnalysesView = () => {
                             style={{width: "10vw", height: "10vw"}}
                         />
                         <BasicText>{playerInfos.playerName}</BasicText>
-                        <BasicText>{playerInfos.playerLevel}</BasicText>
+                        <BasicText> Level {playerInfos.playerLevel}</BasicText>
                     </div>
 
                     {haveRankedStat ? (
@@ -121,16 +108,15 @@ export const AnalysesView = () => {
                                 alt="PlayerTier"
                                 style={{width: "10vw", height: "auto"}}
                             />
-                            <BasicText>{playerInfos.tier + " " + playerInfos.rank }</BasicText>
-                            <BasicText style={{color: color.green}} >{playerInfos.wins + " wins"}</BasicText>
-                            <BasicText style={{color: color.red}} >{playerInfos.losses + " losses"}</BasicText>
+                            <BasicText>{playerInfos.tier + " " + playerInfos.rank}</BasicText>
+                            <BasicText style={{color: color.green}}>{playerInfos.wins + " wins"}</BasicText>
+                            <BasicText style={{color: color.red}}>{playerInfos.losses + " losses"}</BasicText>
                         </div>
-                    ): (
+                    ) : (
                         <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
                             <BasicText>UNRANKED</BasicText>
                         </div>
                     )}
-
 
 
                 </div>

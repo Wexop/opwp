@@ -112,8 +112,8 @@ export const AnalysesView = () => {
                             alt="PlayerIcon"
                             style={{width: "10vw", height: "10vw"}}
                         />
-                        <BasicText>{summoner.playerName}</BasicText>
-                        <BasicText> Level {summoner.playerLevel}</BasicText>
+                        <BasicText>{summoner.name}</BasicText>
+                        <BasicText> Level {summoner.summonerLevel}</BasicText>
                     </div>
 
                     {rankedStat ? (

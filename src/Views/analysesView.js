@@ -2,7 +2,7 @@ import {useParams} from "react-router-dom"
 import axios from "axios"
 import {useEffect, useState} from "react"
 import {riotAPIKey} from "../utile/riotAPIKey";
-import {CardStyle} from "../components/card";
+import {CardStyle, GamesContainerStyle, GamesInfoContainerStyle} from "../components/card";
 import {BasicText} from "../components/basicComponents";
 import {color} from "../utile/color";
 
@@ -82,7 +82,7 @@ export const AnalysesView = () => {
                 const gameIds = res.data.slice(0, 5)
                 Promise.all(gameIds.map((id) => {
                     // Fetch game
-                    return axios.get (`https://europe.api.riotgames.com/lol/match/v5/matches/${id}?${riotAPIKey}`).then(res => res.data)
+                    return axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/${id}?${riotAPIKey}`).then(res => res.data)
                 })).then((games) => {
                     setGames(games)
                 })
@@ -95,47 +95,104 @@ export const AnalysesView = () => {
 
     console.log("games", games);
 
-    return (
-        <>
-            <div style={{display: "flex", justifyContent: "center"}}>
+    const SummonerStatsCard = () => {
+        return (
 
-                <div style={{
-                    ...CardStyle,
-                    width: "70vw",
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-evenly"
-                }}>
-                    <div style={{display: "flex", alignItems: "center", flexDirection: "column",}}>
-                        <img
-                            src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/profileicon/${summoner.profileIconId}.png`}
-                            alt="PlayerIcon"
-                            style={{width: "10vw", height: "10vw"}}
-                        />
-                        <BasicText>{summoner.name}</BasicText>
-                        <BasicText> Level {summoner.summonerLevel}</BasicText>
-                    </div>
-
-                    {rankedStat ? (
-                        <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
-                            <img
-                                src={`https://raw.githubusercontent.com/Wexop/opwp/master/src/emblems/Emblem_${rankedStat.tier.toLowerCase()}.png`}
-                                alt="PlayerTier"
-                                style={{width: "10vw", height: "auto"}}
-                            />
-                            <BasicText>{rankedStat.tier + " " + rankedStat.rank}</BasicText>
-                            <BasicText style={{color: color.green}}>{rankedStat.wins + " wins"}</BasicText>
-                            <BasicText style={{color: color.red}}>{rankedStat.losses + " losses"}</BasicText>
-                        </div>
-                    ) : (
-                        <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
-                            <BasicText>UNRANKED</BasicText>
-                        </div>
-                    )}
-
-
+            <div style={{
+                ...CardStyle,
+                width: "70vw",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-evenly"
+            }}>
+                <div style={{display: "flex", alignItems: "center", flexDirection: "column",}}>
+                    <img
+                        src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/profileicon/${summoner.profileIconId}.png`}
+                        alt="PlayerIcon"
+                        style={{width: "10vw", height: "10vw"}}
+                    />
+                    <BasicText>{summoner.name}</BasicText>
+                    <BasicText> Level {summoner.summonerLevel}</BasicText>
                 </div>
 
+                {rankedStat ? (
+                    <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
+                        <img
+                            src={`https://raw.githubusercontent.com/Wexop/opwp/master/src/emblems/Emblem_${rankedStat.tier.toLowerCase()}.png`}
+                            alt="PlayerTier"
+                            style={{width: "10vw", height: "auto"}}
+                        />
+                        <BasicText>{rankedStat.tier + " " + rankedStat.rank}</BasicText>
+                        <BasicText style={{color: color.green}}>{rankedStat.wins + " wins"}</BasicText>
+                        <BasicText style={{color: color.red}}>{rankedStat.losses + " losses"}</BasicText>
+                    </div>
+                ) : (
+                    <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
+                        <BasicText>UNRANKED</BasicText>
+                    </div>
+                )}
+
+            </div>
+
+        )
+    }
+
+    const SummonerGamesStats = () => {
+
+        return (
+
+            <div style={{
+                ...CardStyle,
+                width: "70vw",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-evenly"
+            }}>
+
+                {
+                    games.map((game, index) => {
+
+                        const gameInfos = game["info"]
+                        const participants = gameInfos["participants"]
+
+                        const blueTeamPlayers = []
+                        const redTeamPlayers = []
+
+                        let playerTeam = 0
+
+                        participants.map((player, index) => {
+                            player["teamId"] === 100 ? blueTeamPlayers.push(player) : redTeamPlayers.push(player)
+                            player["summonerName"] === summoner.name && player["teamId"] === 100 ? playerTeam = 0 : playerTeam = 1
+                        })
+
+                        let playerWin = gameInfos["teams"][playerTeam]["win"]
+
+
+                        return (
+                            <div style={{...GamesContainerStyle,
+                                backgroundColor: playerWin ? color.blueWin : color.redLose,
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-evenly"
+                            }}>
+                                <div style={{...GamesInfoContainerStyle}}>
+                                    <BasicText>Game duration { Math.floor( gameInfos.gameDuration / 60)} min</BasicText>
+                                </div>
+
+                            </div>
+                        )
+                    })
+                }
+            </div>
+        )
+    }
+
+
+    return (
+        <>
+            <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
+                <SummonerStatsCard/>
+                <SummonerGamesStats/>
             </div>
         </>
     )

@@ -56,6 +56,9 @@ export const AnalysesView = () => {
 
     })*/
 
+    const [summonersSpell, setSummonersSpell] = useState()
+
+
     //get sumonner
     useEffect(() => {
         name && axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?${riotAPIKey}`)
@@ -63,6 +66,15 @@ export const AnalysesView = () => {
                 console.log(res.data)
                 setSummoner(res.data)
             })
+    }, [name])
+
+    //summonersSpells
+
+    useEffect(() => {
+        axios.get("http://ddragon.leagueoflegends.com/cdn/12.23.1/data/en_US/summoner.json").then(res => {
+            setSummonersSpell(res.data)
+            console.log("sums spell", res.data)
+        })
     }, [name])
 
     //get sumonner ranked stats
@@ -209,6 +221,22 @@ export const AnalysesView = () => {
                             })
                         }
 
+                        const data = summonersSpell.data
+
+                        const getSummonerSpellImgLink = (spellId: any) => {
+
+                            let imageLink = "http://ddragon.leagueoflegends.com/cdn/12.23.1/img/spell/"
+
+                            Object.keys(data).forEach((summoners, index) => {
+                                if (index == spellId) {
+                                    imageLink += summonersSpell.data[summoners]["image"]["full"]
+                                }
+                            })
+
+                            return imageLink
+
+                        }
+
                         return (
                             <div style={{
                                 ...GamesContainerStyle,
@@ -217,11 +245,13 @@ export const AnalysesView = () => {
                                 flexDirection: "row",
                                 justifyContent: "space-evenly"
                             }}>
+
                                 <div style={{...GamesInfoContainerStyle}}>
                                     <BasicText style={{fontSize: "2vw"}}>{playerWin ? "Victory" : "Defeat"} </BasicText>
                                     <BasicText>Game duration </BasicText>
                                     <BasicText>{Math.floor(gameInfos.gameDuration / 60)} min </BasicText>
                                 </div>
+
                                 <div style={{...GamesInfoContainerStyle}}>
                                     <img
                                         src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/champion/${playerStats.championName}.png`}
@@ -231,7 +261,26 @@ export const AnalysesView = () => {
                                     <BasicText>{playerStats.championName}</BasicText>
                                     <BasicText>{`${playerStats.kills}/${playerStats.deaths}/${playerStats.assists}`}</BasicText>
                                     <BasicText>{`${playerStats.totalMinionsKilled} CS (${Math.round(10 * (playerStats.totalMinionsKilled / (gameInfos.gameDuration / 60))) / 10} / min)`}</BasicText>
+                                    <div style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        width: "85%"
+                                    }}>
+
+                                        <img
+                                            src={getSummonerSpellImgLink(playerStats.summoner1Id)}
+                                            alt="ChampIcon"
+                                            style={{width: "3vw", height: "3vw", borderRadius: "5px"}}
+                                        />
+                                        <img
+                                            src={getSummonerSpellImgLink(playerStats.summoner2Id)} alt="ChampIcon"
+                                            style={{width: "3vw", height: "3vw", borderRadius: "5px"}}
+                                        />
+
+                                    </div>
                                 </div>
+
                                 <div style={{...GamesInfoContainerStyle}}>
                                     {
                                         playerItems.map((item, index) => {
@@ -246,7 +295,7 @@ export const AnalysesView = () => {
                                                         width: "2.5vw",
                                                         height: "2.5vw",
                                                         backgroundColor: color.black
-                                                    }}></div>
+                                                    }}/>
                                                 )
                                         })
                                     }
@@ -257,6 +306,7 @@ export const AnalysesView = () => {
                                         style={{width: "2.5vw", height: "2.5vw", marginTop: "1vh"}}/>
 
                                 </div>
+
                                 <div style={{
                                     width: "50%", display: "flex",
                                     flexDirection: "row",

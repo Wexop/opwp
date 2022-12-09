@@ -5,10 +5,21 @@ import { SimpleButton, simpleButtonStyle } from "../components/button"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import ReactDOM from 'react-dom';
+import {useNavigate} from "react-router-dom";
 
 
 
-const HomeView = (handleSubmit: any) => {
+const HomeView = () => {
+
+    const navigate = useNavigate()
+
+    const handleSubmit = event => {
+        event.preventDefault();
+        const player = event.target.player.value
+        console.log(player)
+
+        navigate(`/analyse/${player}`)
+    };
 
 
 

@@ -1,28 +1,24 @@
-import {useLocation} from "react-router-dom"
+import {useLocation, useParams} from "react-router-dom"
 import axios from "axios"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {riotAPIKey} from "../utile/riotAPIKey";
 import {CardStyle} from "../components/card";
 import {BasicText} from "../components/basicComponents";
 import {color} from "../utile/color";
 
 export const AnalysesView = () => {
+    const {name} = useParams()
 
-    const location = useLocation()
-
-    const name = location.state.player
-
-    let playerInfos = {
-        playerLevel: 0,
-        playerName: "",
-        accountId: "",
-        id: "",
-        profileIconId: "",
-        puuid: "",
-        revisionDate: "",
-
-        //ranked
-
+    const [summoner, setSummoner] = useState({
+        summonerLevel: '',
+        name: '',
+        accountId: '',
+        id: '',
+        puuid: '',
+        profileIconId: '',
+        revisionDate: '',
+    })
+    const [rankedStat, setRankedState] = useState({
         leagueId: "",
         tier: "Bronze",
         rank: "",
@@ -31,53 +27,26 @@ export const AnalysesView = () => {
         wins: 0,
         losses: 0,
         hotStreak: false
-    }
+    })
 
-    const [summoner, setSummoner] = useState("")
-    const [rankedStat, setRankedState] = useState("")
-
-    let tierRank = playerInfos.tier
-
-    axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?${riotAPIKey}`)
-        .then(res => {
-            setSummoner(res.data)
-        })
-
-    console.log(summoner)
-
-    if (summoner) {
-
-
-        playerInfos.playerLevel = summoner["summonerLevel"]
-        playerInfos.playerName = summoner["name"]
-        playerInfos.accountId = summoner["accountId"]
-        playerInfos.id = summoner["id"]
-        playerInfos.puuid = summoner["puuid"]
-        playerInfos.profileIconId = summoner["profileIconId"]
-        playerInfos.revisionDate = summoner["revisionDate"]
-
-        axios.get(`https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/${playerInfos.id}?${riotAPIKey}`)
+    useEffect(() => {
+        name && axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?${riotAPIKey}`)
             .then(res => {
-                setRankedState(res.data)
+                console.log("res.data")
+                console.log(res.data)
+                setSummoner(res.data)
             })
+    }, [name])
 
-        console.log(rankedStat)
-    }
+   useEffect(() => {
+       summoner.id && axios.get(`https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?${riotAPIKey}`)
+           .then(res => {
+               setRankedState(res.data?.[0])
+           })
+   }, [summoner])
 
-    const haveRankedStat = rankedStat && rankedStat.length > 0
-
-    if (haveRankedStat) {
-        /*        playerInfos.leagueId = rankedStat[0]["leagueId"]*/
-        playerInfos.rank = rankedStat[0]["rank"]
-        playerInfos.wins = rankedStat[0]["wins"]
-        playerInfos.losses = rankedStat[0]["losses"]
-        playerInfos.tier = rankedStat[0]["tier"]
-        playerInfos.summonerId = rankedStat[0]["summonerId"]
-        playerInfos.hotStreak = rankedStat[0]["hotStreak"]
-
-
-        tierRank = playerInfos.tier.toLowerCase()
-
+    if (!name) {
+        return <h1>pending</h1>
     }
 
     return (
@@ -93,24 +62,24 @@ export const AnalysesView = () => {
                 }}>
                     <div style={{display: "flex", alignItems: "center", flexDirection: "column",}}>
                         <img
-                            src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/profileicon/${playerInfos.profileIconId}.png`}
+                            src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/profileicon/${summoner.profileIconId}.png`}
                             alt="PlayerIcon"
                             style={{width: "10vw", height: "10vw"}}
                         />
-                        <BasicText>{playerInfos.playerName}</BasicText>
-                        <BasicText> Level {playerInfos.playerLevel}</BasicText>
+                        <BasicText>{summoner.playerName}</BasicText>
+                        <BasicText> Level {summoner.playerLevel}</BasicText>
                     </div>
 
-                    {haveRankedStat ? (
+                    {rankedStat ? (
                         <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
                             <img
-                                src={`https://raw.githubusercontent.com/Wexop/opwp/master/src/emblems/Emblem_${tierRank}.png`}
+                                src={`https://raw.githubusercontent.com/Wexop/opwp/master/src/emblems/Emblem_${rankedStat.tier.toLowerCase()}.png`}
                                 alt="PlayerTier"
                                 style={{width: "10vw", height: "auto"}}
                             />
-                            <BasicText>{playerInfos.tier + " " + playerInfos.rank}</BasicText>
-                            <BasicText style={{color: color.green}}>{playerInfos.wins + " wins"}</BasicText>
-                            <BasicText style={{color: color.red}}>{playerInfos.losses + " losses"}</BasicText>
+                            <BasicText>{rankedStat.tier + " " + rankedStat.rank}</BasicText>
+                            <BasicText style={{color: color.green}}>{rankedStat.wins + " wins"}</BasicText>
+                            <BasicText style={{color: color.red}}>{rankedStat.losses + " losses"}</BasicText>
                         </div>
                     ) : (
                         <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>

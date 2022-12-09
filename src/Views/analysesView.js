@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom"
+import {useNavigate, useParams} from "react-router-dom"
 import axios from "axios"
 import {useEffect, useState} from "react"
 import {riotAPIKey} from "../utile/riotAPIKey";
@@ -8,6 +8,7 @@ import {color} from "../utile/color";
 
 export const AnalysesView = () => {
     const {name} = useParams()
+    const navigate = useNavigate()
 
     const [summoner, setSummoner] = useState({
         summonerLevel: '',
@@ -159,24 +160,116 @@ export const AnalysesView = () => {
                         const redTeamPlayers = []
 
                         let playerTeam = 0
+                        let playerStats = false
 
                         participants.map((player, index) => {
                             player["teamId"] === 100 ? blueTeamPlayers.push(player) : redTeamPlayers.push(player)
-                            player["summonerName"] === summoner.name && player["teamId"] === 100 ? playerTeam = 0 : playerTeam = 1
+                            if (player["summonerName"] === summoner.name) {
+                                playerTeam = player["teamId"] === 100 ? 0 : 1
+                                playerStats = player
+                            }
                         })
 
                         let playerWin = gameInfos["teams"][playerTeam]["win"]
 
+                        const playerItems = []
+                        for (let i = 0; i < 6; i++) {
+                            playerItems.push(playerStats[`item${i}`])
+                        }
+
+                        const showTeamStat = (team: any) => {
+                            return team.map((player, index) => {
+
+                                const isPlayer = player.summonerName === summoner.name
+
+                                return (
+                                    <div style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignSelf: "start",
+                                        alignItems: "center"
+                                    }}>
+                                        <img
+                                            src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/champion/${player.championName}.png`}
+                                            alt="champIcon"
+                                            style={{width: "2vw", height: "2vw"}}
+                                        />
+                                        <a onClick={() => {
+                                            navigate(`/analyse/${player.summonerName}`)
+                                        }
+                                        }>
+                                            <BasicText style={{
+                                                margin: 0,
+                                                marginLeft: "5%",
+                                                fontWeight: isPlayer ? 700 : 400
+                                            }}>{player.summonerName}</BasicText>
+                                        </a>
+                                    </div>
+                                )
+                            })
+                        }
 
                         return (
-                            <div style={{...GamesContainerStyle,
+                            <div style={{
+                                ...GamesContainerStyle,
                                 backgroundColor: playerWin ? color.blueWin : color.redLose,
                                 display: "flex",
                                 flexDirection: "row",
                                 justifyContent: "space-evenly"
                             }}>
                                 <div style={{...GamesInfoContainerStyle}}>
-                                    <BasicText>Game duration { Math.floor( gameInfos.gameDuration / 60)} min</BasicText>
+                                    <BasicText style={{fontSize: "2vw"}}>{playerWin ? "Victory" : "Defeat"} </BasicText>
+                                    <BasicText>Game duration </BasicText>
+                                    <BasicText>{Math.floor(gameInfos.gameDuration / 60)} min </BasicText>
+                                </div>
+                                <div style={{...GamesInfoContainerStyle}}>
+                                    <img
+                                        src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/champion/${playerStats.championName}.png`}
+                                        alt="ChampIcon"
+                                        style={{width: "4vw", height: "4vw", borderRadius: "50px"}}
+                                    />
+                                    <BasicText>{playerStats.championName}</BasicText>
+                                    <BasicText>{`${playerStats.kills}/${playerStats.deaths}/${playerStats.assists}`}</BasicText>
+                                    <BasicText>{`${playerStats.totalMinionsKilled} CS (${Math.round(10 * (playerStats.totalMinionsKilled / (gameInfos.gameDuration / 60))) / 10} / min)`}</BasicText>
+                                </div>
+                                <div style={{...GamesInfoContainerStyle}}>
+                                    {
+                                        playerItems.map((item, index) => {
+                                            return item !== 0 ? (
+                                                    <img
+                                                        src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/item/${item}.png`}
+                                                        alt={`item${index}`}
+                                                        style={{width: "2.5vw", height: "2.5vw"}}
+                                                    />)
+                                                : (
+                                                    <div style={{
+                                                        width: "2.5vw",
+                                                        height: "2.5vw",
+                                                        backgroundColor: color.black
+                                                    }}></div>
+                                                )
+                                        })
+                                    }
+
+                                    <img
+                                        src={`http://ddragon.leagueoflegends.com/cdn/12.23.1/img/item/${playerStats.item6}.png`}
+                                        alt={`item${index}`}
+                                        style={{width: "2.5vw", height: "2.5vw", marginTop: "1vh"}}/>
+
+                                </div>
+                                <div style={{
+                                    width: "50%", display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-evenly"
+                                }}>
+                                    <div style={{...GamesInfoContainerStyle, justifyContent: "space-around"}}>
+                                        {showTeamStat(blueTeamPlayers)}
+                                    </div>
+                                    <div style={{
+                                        ...GamesInfoContainerStyle, justifyContent: "space-around"
+                                    }}>
+                                        {showTeamStat(redTeamPlayers)}
+                                    </div>
                                 </div>
 
                             </div>

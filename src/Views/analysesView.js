@@ -19,16 +19,7 @@ export const AnalysesView = () => {
         profileIconId: '',
         revisionDate: '',
     })
-    const [rankedStat, setRankedState] = useState({
-        leagueId: "",
-        tier: "Bronze",
-        rank: "",
-        summonerId: "",
-        leaguePoints: 0,
-        wins: 0,
-        losses: 0,
-        hotStreak: false
-    })
+    const [rankedStat, setRankedState] = useState([])
 
     //const [gamesId, setGamesID] = useState([])
     const [games, setGames] = useState([])
@@ -82,7 +73,9 @@ export const AnalysesView = () => {
     useEffect(() => {
         summoner.id && axios.get(`https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?${riotAPIKey}`)
             .then(res => {
-                setRankedState(res.data?.[0])
+                if (res.data?.length > 0) {
+                    setRankedState(res.data)
+                }
                 console.log(res.data)
             })
     }, [summoner])
@@ -104,6 +97,25 @@ export const AnalysesView = () => {
 
     if (!name) {
         return <h1>pending</h1>
+    }
+
+    const showRankedStats = () => {
+
+        return rankedStat.map((rank, index) => {
+            return (
+                <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
+                    <BasicText style={{fontWeight: 700}}>{rank.queueType}</BasicText>
+                    <img
+                        src={`https://raw.githubusercontent.com/Wexop/opwp/master/src/emblems/Emblem_${rank.tier.toLowerCase()}.png`}
+                        alt="PlayerTier"
+                        style={{width: "10vw", height: "auto"}}
+                    />
+                    <BasicText>{rank.tier + " " + rank.rank}</BasicText>
+                    <BasicText style={{color: color.green}}>{rank.wins + " wins"}</BasicText>
+                    <BasicText style={{color: color.red}}>{rank.losses + " losses"}</BasicText>
+                </div>
+            )
+        })
     }
 
     console.log("games", games);
@@ -129,16 +141,7 @@ export const AnalysesView = () => {
                 </div>
 
                 {rankedStat ? (
-                    <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
-                        <img
-                            src={`https://raw.githubusercontent.com/Wexop/opwp/master/src/emblems/Emblem_${rankedStat.tier.toLowerCase()}.png`}
-                            alt="PlayerTier"
-                            style={{width: "10vw", height: "auto"}}
-                        />
-                        <BasicText>{rankedStat.tier + " " + rankedStat.rank}</BasicText>
-                        <BasicText style={{color: color.green}}>{rankedStat.wins + " wins"}</BasicText>
-                        <BasicText style={{color: color.red}}>{rankedStat.losses + " losses"}</BasicText>
-                    </div>
+                   showRankedStats()
                 ) : (
                     <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
                         <BasicText>UNRANKED</BasicText>

@@ -1,4 +1,4 @@
-import {useLocation, useParams} from "react-router-dom"
+import {useParams} from "react-router-dom"
 import axios from "axios"
 import {useEffect, useState} from "react"
 import {riotAPIKey} from "../utile/riotAPIKey";
@@ -29,25 +29,71 @@ export const AnalysesView = () => {
         hotStreak: false
     })
 
+    //const [gamesId, setGamesID] = useState([])
+    const [games, setGames] = useState([])
+    /*const [games, setGames] = useState({
+
+        info: {
+            gameMode: "",
+            gameDuration: 0,
+            teams: [{
+                bans: [{
+                    championId: 0, pickTurn: 0
+                }],
+                teamId: 0,
+                win: false,
+            }],
+            participants: [
+                {
+                    championName: "",
+                    kills: 0,
+                    teamId: 0,
+                    summonerName: ""
+                }
+            ]
+        }
+
+    })*/
+
+    //get sumonner
     useEffect(() => {
         name && axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?${riotAPIKey}`)
             .then(res => {
-                console.log("res.data")
                 console.log(res.data)
                 setSummoner(res.data)
             })
     }, [name])
 
-   useEffect(() => {
-       summoner.id && axios.get(`https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?${riotAPIKey}`)
-           .then(res => {
-               setRankedState(res.data?.[0])
-           })
-   }, [summoner])
+    //get sumonner ranked stats
+
+    useEffect(() => {
+        summoner.id && axios.get(`https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?${riotAPIKey}`)
+            .then(res => {
+                setRankedState(res.data?.[0])
+                console.log(res.data)
+            })
+    }, [summoner])
+
+    //get last 20 games id
+    useEffect(() => {
+        // Fetch game ids
+        summoner.puuid && axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${summoner.puuid}/ids?start=0&count=20&${riotAPIKey}`)
+            .then(res => {
+                const gameIds = res.data.slice(0, 5)
+                Promise.all(gameIds.map((id) => {
+                    // Fetch game
+                    return axios.get (`https://europe.api.riotgames.com/lol/match/v5/matches/${id}?${riotAPIKey}`).then(res => res.data)
+                })).then((games) => {
+                    setGames(games)
+                })
+            })
+    }, [summoner])
 
     if (!name) {
         return <h1>pending</h1>
     }
+
+    console.log("games", games);
 
     return (
         <>

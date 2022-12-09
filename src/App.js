@@ -9,44 +9,18 @@ import { useState } from "react"
 
 
 function App() {
-
     return (
-
-
         <Router>
             <div>
                 {NavScrollExample()}
-
                 <Routes>
-                    <Route path="/analyse" element={<Analyse />}/>
-                    <Route path="/" element={<Home />}/>
+                    <Route path="/analyse/:name" element={<AnalysesView />}/>
+                    <Route path="/" element={<HomeView />}/>
                 </Routes>
             </div>
         </Router>
 
     );
-}
-
-function Analyse(props) {
-
-    return AnalysesView();
-}
-
-function Home() {
-
-    const navigate = useNavigate()
-
-    const handleSubmit = event => {
-        event.preventDefault();
-        const player = event.target.player.value
-        console.log(player)
-
-        navigate("/analyse", {state: {
-            player: player
-            }})
-    };
-
-    return HomeView(handleSubmit);
 }
 
 export default App;

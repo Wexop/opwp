@@ -23,29 +23,6 @@ export const AnalysesView = () => {
 
     //const [gamesId, setGamesID] = useState([])
     const [games, setGames] = useState([])
-    /*const [games, setGames] = useState({
-
-        info: {
-            gameMode: "",
-            gameDuration: 0,
-            teams: [{
-                bans: [{
-                    championId: 0, pickTurn: 0
-                }],
-                teamId: 0,
-                win: false,
-            }],
-            participants: [
-                {
-                    championName: "",
-                    kills: 0,
-                    teamId: 0,
-                    summonerName: ""
-                }
-            ]
-        }
-
-    })*/
 
     const [summonersSpell, setSummonersSpell] = useState()
 

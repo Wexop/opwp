@@ -140,7 +140,7 @@ export const AnalysesView = () => {
                 <BasicLittleText>You played {timePlayed / 60} min</BasicLittleText>
                 <BasicLittleText>You dealed {totalDamageDealt} dmg</BasicLittleText>
                 <BasicLittleText>You get the first kill {firstBloodKill} time</BasicLittleText>
-                
+
             </div>
         )
     }
@@ -150,10 +150,11 @@ export const AnalysesView = () => {
 
             <div style={{
                 ...CardStyle,
-                minWidth: "50vw",
+                minWidth: "60vw",
                 display: "flex",
                 flexDirection: "row",
-                justifyContent: "space-evenly"
+                justifyContent: "space-evenly",
+                alignItems: "center"
             }}>
                 <div style={{display: "flex", alignItems: "center", flexDirection: "column",}}>
                     <img

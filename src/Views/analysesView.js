@@ -3,7 +3,7 @@ import axios from "axios"
 import {useEffect, useState} from "react"
 import {riotAPIKey} from "../utile/riotAPIKey";
 import {CardStyle, GamesContainerStyle, GamesInfoContainerStyle} from "../components/card";
-import {BasicText} from "../components/basicComponents";
+import {BasicLittleText, BasicText} from "../components/basicComponents";
 import {color} from "../utile/color";
 
 export const AnalysesView = () => {
@@ -97,12 +97,60 @@ export const AnalysesView = () => {
 
     console.log("games", games);
 
+    let totalGold = 0
+    let goldSpent = 0
+    let pinkWards = 0
+    let wards = 0
+    let heal = 0
+    let timePlayed = 0
+    let totalDamageDealt = 0
+    let firstBloodKill = 0
+
+    const SummonerFunnyStats = () => {
+
+        games.map((game, index) => {
+            game.info.participants.map((participant, index) => {
+                if (participant.summonerName == summoner.name) {
+                    totalGold += participant.goldEarned
+                    goldSpent += participant.goldSpent
+                    pinkWards += participant.detectorWardsPlaced
+                    wards += participant.wardsPlaced
+                    heal += participant.totalHeal
+                    timePlayed += participant.timePlayed
+                    totalDamageDealt += participant.totalDamageDealt
+                    firstBloodKill += participant.firstBloodKill ? 1 : 0
+                }
+            })
+        })
+
+        return (
+            <div style={{
+                ...CardStyle,
+                width: "1fr",
+                flexDirection: "column",
+
+            }}>
+                <BasicText>Funny stats (5 last games)</BasicText>
+                <hr/>
+                <BasicLittleText>Total gold earned : {totalGold}</BasicLittleText>
+                <BasicLittleText>Total gold spent : {goldSpent}</BasicLittleText>
+                <BasicLittleText>Total wards placed : {wards}</BasicLittleText>
+                <BasicLittleText>Total pink wards placed : {pinkWards}</BasicLittleText>
+                <BasicLittleText>You healed {heal} hp</BasicLittleText>
+                <BasicLittleText>You played {timePlayed / 60} min</BasicLittleText>
+                <BasicLittleText>You dealed {totalDamageDealt} dmg</BasicLittleText>
+                <BasicLittleText>You get the first kill {firstBloodKill} time</BasicLittleText>
+                
+            </div>
+        )
+    }
+
     const SummonerStatsCard = () => {
         return (
 
             <div style={{
                 ...CardStyle,
-                width: "70vw",
+                minWidth: "50vw",
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-evenly"
@@ -118,7 +166,7 @@ export const AnalysesView = () => {
                 </div>
 
                 {rankedStat ? (
-                   showRankedStats()
+                    showRankedStats()
                 ) : (
                     <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
                         <BasicText>UNRANKED</BasicText>
@@ -136,7 +184,7 @@ export const AnalysesView = () => {
 
             <div style={{
                 ...CardStyle,
-                width: "70vw",
+                width: "60vw",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-evenly"
@@ -208,8 +256,7 @@ export const AnalysesView = () => {
                             let imageLink = "http://ddragon.leagueoflegends.com/cdn/12.23.1/img/spell/"
 
                             Object.keys(data).forEach((summoners, index) => {
-                                console.log(summoners)
-                                if ( parseInt(summonersSpell.data[summoners]["key"])  == spellId) {
+                                if (parseInt(summonersSpell.data[summoners]["key"]) == spellId) {
                                     imageLink += summonersSpell.data[summoners]["image"]["full"]
                                 }
                             })
@@ -314,9 +361,24 @@ export const AnalysesView = () => {
 
     return (
         <>
-            <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
-                <SummonerStatsCard/>
-                <SummonerGamesStats/>
+            <div style={{display: "flex", justifyContent: "space-around", flexDirection: "row"}}>
+                <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                    <SummonerFunnyStats/>
+                </div>
+                <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
+                    <SummonerStatsCard/>
+                    <SummonerGamesStats/>
+                </div>
+                <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    width: "10vw"
+                }}>
+
+                </div>
+
             </div>
         </>
     )

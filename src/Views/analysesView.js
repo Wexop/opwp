@@ -208,7 +208,8 @@ export const AnalysesView = () => {
                             let imageLink = "http://ddragon.leagueoflegends.com/cdn/12.23.1/img/spell/"
 
                             Object.keys(data).forEach((summoners, index) => {
-                                if (index == spellId) {
+                                console.log(summoners)
+                                if ( parseInt(summonersSpell.data[summoners]["key"])  == spellId) {
                                     imageLink += summonersSpell.data[summoners]["image"]["full"]
                                 }
                             })

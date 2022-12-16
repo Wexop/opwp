@@ -105,6 +105,8 @@ export const AnalysesView = () => {
     let timePlayed = 0
     let totalDamageDealt = 0
     let firstBloodKill = 0
+    let dmgToChampion = 0
+    let largestCriticalStrike = 0
 
     const SummonerFunnyStats = () => {
 
@@ -119,6 +121,8 @@ export const AnalysesView = () => {
                     timePlayed += participant.timePlayed
                     totalDamageDealt += participant.totalDamageDealt
                     firstBloodKill += participant.firstBloodKill ? 1 : 0
+                    dmgToChampion += participant.totalDamageDealtToChampions
+                    largestCriticalStrike = participant.largestCriticalStrike > largestCriticalStrike ? participant.largestCriticalStrike : largestCriticalStrike
                 }
             })
         })
@@ -139,7 +143,9 @@ export const AnalysesView = () => {
                 <BasicLittleText>You healed {heal} hp</BasicLittleText>
                 <BasicLittleText>You played {timePlayed / 60} min</BasicLittleText>
                 <BasicLittleText>You dealed {totalDamageDealt} dmg</BasicLittleText>
+                <BasicLittleText>You dealed {dmgToChampion} dmg to champ</BasicLittleText>
                 <BasicLittleText>You get the first kill {firstBloodKill} time</BasicLittleText>
+                <BasicLittleText>Largest critical strike : {largestCriticalStrike}</BasicLittleText>
 
             </div>
         )

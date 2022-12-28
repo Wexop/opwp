@@ -81,7 +81,7 @@ export const AnalysesView = () => {
         return rankedStat.map((rank, index) => {
             return (
                 <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
-                    <BasicText style={{fontWeight: 700}}>{rank.queueType}</BasicText>
+                    <BasicText style={{fontWeight: 700}}>{rank.queueType.replaceAll("_", " ")}</BasicText>
                     <img
                         src={`https://raw.githubusercontent.com/Wexop/opwp/master/src/emblems/Emblem_${rank.tier.toLowerCase()}.png`}
                         alt="PlayerTier"

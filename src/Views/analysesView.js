@@ -39,7 +39,7 @@ export const AnalysesView = () => {
     //summonersSpells
 
     useEffect(() => {
-        axios.get("https://ddragon.leagueoflegends.com/cdn/12.23.1/data/en_US/summoner.json").then(res => {
+        axios.get("https://ddragon.leagueoflegends.com/cdn/13.22.1/data/en_US/summoner.json").then(res => {
             setSummonersSpell(res.data)
             console.log("sums spell", res.data)
         })

@@ -29,7 +29,7 @@ export const AnalysesView = () => {
 
     //get sumonner
     useEffect(() => {
-        name && axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?${riotAPIKey}`)
+        name && axios.get(`https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}?api-key=${riotAPIKey}`)
             .then(res => {
                 console.log(res.data)
                 setSummoner(res.data)
@@ -48,7 +48,7 @@ export const AnalysesView = () => {
     //get sumonner ranked stats
 
     useEffect(() => {
-        summoner.id && axios.get(`https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?${riotAPIKey}`)
+        summoner.id && axios.get(`https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner.id}?api-key=${riotAPIKey}`)
             .then(res => {
                 if (res.data?.length > 0) {
                     setRankedState(res.data)
@@ -60,12 +60,12 @@ export const AnalysesView = () => {
     //get last 20 games id
     useEffect(() => {
         // Fetch game ids
-        summoner.puuid && axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${summoner.puuid}/ids?start=0&count=20&${riotAPIKey}`)
+        summoner.puuid && axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${summoner.puuid}/ids?start=0&count=20&$api-key={riotAPIKey}`)
             .then(res => {
                 const gameIds = res.data.slice(0, 5)
                 Promise.all(gameIds.map((id) => {
                     // Fetch game
-                    return axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/${id}?${riotAPIKey}`).then(res => res.data)
+                    return axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/${id}?api-key=${riotAPIKey}`).then(res => res.data)
                 })).then((games) => {
                     setGames(games)
                 })

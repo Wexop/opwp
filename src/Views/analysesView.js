@@ -60,7 +60,7 @@ export const AnalysesView = () => {
     //get last 20 games id
     useEffect(() => {
         // Fetch game ids
-        summoner.puuid && axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${summoner.puuid}/ids?start=0&count=20&$api_key=${riotAPIKey}`)
+        summoner.puuid && axios.get(`https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${summoner.puuid}/ids?start=0&count=20&api_key=${riotAPIKey}`)
             .then(res => {
                 const gameIds = res.data.slice(0, 5)
                 Promise.all(gameIds.map((id) => {
